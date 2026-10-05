@@ -574,9 +574,31 @@ Luxury fashion editorial aesthetic.
     "طبیعت": """Create an ultra-realistic casual smartphone photo of a young woman outdoors sitting on grass. She has long voluminous dark-brown wavy hair, parted naturally, and tilts her head slightly toward the camera with a warm genuine smile. She wears a white sleeveless fitted dress with a soft flowing skirt and thin metallic bracelets. Her arms rest crossed naturally in front of her. Bright natural afternoon sunlight creates soft highlights and gentle shadows across her face and hair, with a blurred green garden background. Slightly soft low-quality smartphone camera, natural imperfect exposure, subtle compression and grain, authentic candid photography, no flash, 2:3, no artificial AI look.
 Ultra-realistic natural skin texture, clearly visible fine pores and micro-pores, realistic peach fuzz, subtle skin lines, tiny imperfections and natural unevenness in skin tone. Keep the original facial identity and facial structure unchanged. Skin is smooth only where naturally smooth, never artificially perfect. No skin retouching, no airbrushing, no blur, no beauty filter, no waxy or plastic appearance. Realistic sebaceous shine and tiny specular highlights on the nose, cheeks and lips, highly detailed pores visible in close-up, authentic smartphone photography skin texture."""
 }
-# ==================== تابع پیام خوش‌آمدگویی و منو ====================
+# ==================== بررسی عضویت کانال و نمایش منو ====================
 @bot.message_handler(commands=['start'])
 def start(message):
+    user_id = message.from_user.id
+    try:
+        chat_member = bot.get_chat_member(CHANNEL_ID, user_id)
+        if chat_member.status in ['member', 'creator', 'administrator']:
+            send_prompt_menu(message.chat.id)
+        else:
+            show_join_message(message.chat.id)
+    except Exception as e:
+        show_join_message(message.chat.id)
+
+def show_join_message(chat_id):
+    markup = telebot.types.InlineKeyboardMarkup()
+    markup.add(telebot.types.InlineKeyboardButton("عضویت در کانال", url=f"https://t.me/{CHANNEL_ID.replace('@', '')}"))
+    markup.add(telebot.types.InlineKeyboardButton("عضو شدم ✅", callback_data="check_join"))
+    
+    bot.send_message(
+        chat_id,
+        "برای استفاده از ربات، لطفاً ابتدا در کانال ما عضو شوید و سپس روی گزینه «عضو شدم ✅» بزنید:",
+        reply_markup=markup
+    )
+
+def send_prompt_menu(chat_id):
     markup = telebot.types.InlineKeyboardMarkup()
     keys = list(prompts_data.keys())
     for i in range(0, len(keys), 2):
@@ -589,11 +611,33 @@ def start(message):
         "سلام! به ربات آرشیو پرامپت‌های تخصصی خوش آمدید. 🌸\n\n"
         "لطفاً از منوی زیر پرامپت مورد نظر خود را انتخاب کنید تا متن آن برایتان ارسال شود:"
     )
-    
-    bot.send_message(message.chat.id, welcome_text, reply_markup=markup)
+    bot.send_message(chat_id, welcome_text, reply_markup=markup)
 
-# ==================== تابع مدیریت کلیک روی دکمه‌ها ====================
-@bot.callback_query_handler(func=lambda call: True)
+# ==================== مدیریت دکمه بررسی عضویت ====================
+@bot.callback_query_handler(func=lambda call: call.data == "check_join")
+def verify_join(call):
+    user_id = call.from_user.id
+    try:
+        chat_member = bot.get_chat_member(CHANNEL_ID, user_id)
+        if chat_member.status in ['member', 'creator', 'administrator']:
+            bot.answer_callback_query(call.id, "عضویت شما تایید شد! 🎉", show_alert=True)
+            markup = telebot.types.InlineKeyboardMarkup()
+            keys = list(prompts_data.keys())
+            for i in range(0, len(keys), 2):
+                row = [telebot.types.InlineKeyboardButton(keys[i], callback_data=keys[i])]
+                if i + 1 < len(keys):
+                    row.append(telebot.types.InlineKeyboardButton(keys[i+1], callback_data=keys[i+1]))
+                markup.row(*row)
+            
+            welcome_text = "عالیه! حالا می‌توانید از منوی زیر پرامپت مورد نظر خود را انتخاب کنید:"
+            bot.edit_message_text(welcome_text, call.message.chat.id, call.message.message_id, reply_markup=markup)
+        else:
+            bot.answer_callback_query(call.id, "هنوز در کانال عضو نشده‌اید! لطفاً اول عضو شوید.", show_alert=True)
+    except Exception as e:
+        bot.answer_callback_query(call.id, "خطایی رخ داد.", show_alert=True)
+
+# ==================== تابع مدیریت کلیک روی پرامپت‌ها ====================
+@bot.callback_query_handler(func=lambda call: call.data != "check_join")
 def button_handler(call):
     selected_key = call.data
     if selected_key in prompts_data:
