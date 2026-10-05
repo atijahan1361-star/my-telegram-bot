@@ -1,10 +1,11 @@
-
-
+import os
 import telebot
+from flask import Flask, request
 
 # توکن ربات شما
 TOKEN = "8556687289:AAEOn3FtCDVrC0mYNRZJPrLtrd0p2kKvmwg"
 bot = telebot.TeleBot(TOKEN)
+server = Flask(__name__)
 
 # آیدی صحیح کانال شما 
 CHANNEL_ID = "@ai_prompt_channel" 
@@ -573,52 +574,49 @@ Luxury fashion editorial aesthetic.
     "طبیعت": """Create an ultra-realistic casual smartphone photo of a young woman outdoors sitting on grass. She has long voluminous dark-brown wavy hair, parted naturally, and tilts her head slightly toward the camera with a warm genuine smile. She wears a white sleeveless fitted dress with a soft flowing skirt and thin metallic bracelets. Her arms rest crossed naturally in front of her. Bright natural afternoon sunlight creates soft highlights and gentle shadows across her face and hair, with a blurred green garden background. Slightly soft low-quality smartphone camera, natural imperfect exposure, subtle compression and grain, authentic candid photography, no flash, 2:3, no artificial AI look.
 Ultra-realistic natural skin texture, clearly visible fine pores and micro-pores, realistic peach fuzz, subtle skin lines, tiny imperfections and natural unevenness in skin tone. Keep the original facial identity and facial structure unchanged. Skin is smooth only where naturally smooth, never artificially perfect. No skin retouching, no airbrushing, no blur, no beauty filter, no waxy or plastic appearance. Realistic sebaceous shine and tiny specular highlights on the nose, cheeks and lips, highly detailed pores visible in close-up, authentic smartphone photography skin texture."""
 }
-
 # ==================== تابع پیام خوش‌آمدگویی و منو ====================
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    # ساخت دکمه‌های شیشه‌ای به صورت دو ستونی
-    keyboard = []
+@bot.message_handler(commands=['start'])
+def start(message):
+    markup = telebot.types.InlineKeyboardMarkup()
     keys = list(prompts_data.keys())
     for i in range(0, len(keys), 2):
-        row = [InlineKeyboardButton(keys[i], callback_data=keys[i])]
+        row = [telebot.types.InlineKeyboardButton(keys[i], callback_data=keys[i])]
         if i + 1 < len(keys):
-            row.append(InlineKeyboardButton(keys[i+1], callback_data=keys[i+1]))
-        keyboard.append(row)
-    
-    reply_markup = InlineKeyboardMarkup(keyboard)
+            row.append(telebot.types.InlineKeyboardButton(keys[i+1], callback_data=keys[i+1]))
+        markup.row(*row)
     
     welcome_text = (
         "سلام! به ربات آرشیو پرامپت‌های تخصصی خوش آمدید. 🌸\n\n"
         "لطفاً از منوی زیر پرامپت مورد نظر خود را انتخاب کنید تا متن آن برایتان ارسال شود:"
     )
     
-    await update.message.reply_text(welcome_text, reply_markup=reply_markup)
+    bot.send_message(message.chat.id, welcome_text, reply_markup=markup)
 
 # ==================== تابع مدیریت کلیک روی دکمه‌ها ====================
-async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    query = update.callback_query
-    await query.answer()
-    
-    selected_key = query.data
+@bot.callback_query_handler(func=lambda call: True)
+def button_handler(call):
+    selected_key = call.data
     if selected_key in prompts_data:
         prompt_text = prompts_data[selected_key]
-        # ارسال متن پرامپت در فرمت کد (قابل کپی با یک تپ)
-        await query.message.reply_text(f"پرامپت **{selected_key}**:\n\n`{prompt_text}`", parse_mode="Markdown")
+        bot.send_message(call.message.chat.id, f"پرامپت **{selected_key}**:\n\n`{prompt_text}`", parse_mode="Markdown")
     else:
-        await query.message.reply_text("پرامپت مورد نظر یافت نشد.")
+        bot.send_message(call.message.chat.id, "پرامپت مورد نظر یافت نشد.")
+    bot.answer_callback_query(call.id)
 
-# ==================== اجرای اصلی ربات ====================
-def main():
-    # ساخت اپلیکیشن و اتصال توکن
-    app = ApplicationBuilder().token(TOKEN).build()
-    
-    # ثبت دستورات و هندلرها
-    app.add_handler(CommandHandler("start", start))
-    app.add_handler(CallbackQueryHandler(button_handler))
-    
-    print("ربات با موفقیت روشن شد و در حال دریافت پیام است...")
-    # شروع به کار ربات
-    app.run_polling()
+# ==================== تنظیمات وب‌هوک برای رندر ====================
+@server.route('/' + TOKEN, methods=['POST'])
+def getMessage():
+    json_string = request.get_data().decode('utf-8')
+    update = telebot.types.Update.de_json(json_string)
+    bot.process_new_updates([update])
+    return "!", 200
+
+@server.route("/")
+def webhook():
+    bot.remove_webhook()
+    bot.set_webhook(url='https://' + os.getenv('RENDER_EXTERNAL_HOSTNAME') + '/' + TOKEN)
+    return "Bot is running!", 200
 
 if __name__ == "__main__":
-    main()
+    server.run(host="0.0.0.0", port=int(os.environ.get('PORT', 5000)))
+
