@@ -1,20 +1,164 @@
-import logging
-from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import ApplicationBuilder, ContextTypes, CommandHandler, CallbackQueryHandler
 
-# ==================== تنظیمات اولیه ====================
-# توکن ربات خود را اینجا وارد کنید
-TOKEN = "YOUR_BOT_TOKEN_HERE"
 
-# فعال‌سازی لاگ‌ها برای بررسی خطاها
-logging.basicConfig(
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    level=logging.INFO
-)
-logger = logging.getLogger(__name__)
+import telebot
+
+# توکن ربات شما
+TOKEN = "8556687289:AAEOn3FtCDVrC0mYNRZJPrLtrd0p2kKvmwg"
+bot = telebot.TeleBot(TOKEN)
+
+# آیدی صحیح کانال شما 
+CHANNEL_ID = "@ai_prompt_channel" 
 
 # ==================== بانک پرامپت‌ها ====================
 prompts_data = {
+      "اسب": """* An intimate and romantic portrait of a young couple, a man and a woman, riding together on a horse.
+* The woman is seated in front. Her long, dark, wavy hair falls beautifully over her shoulders. Her gaze is directed downward, and she has a gentle, calm smile on her lips.
+* The man is seated behind the woman. He has neat, dark hair and a well-groomed beard and mustache. He looks at the woman with a wide, loving smile and tilts his head toward her. Their faces are preserved with complete accuracy.
+
+Pose & Body Language
+* The woman gently rests her head toward the man. Her hands are placed on the horse’s neck and mane.
+* The man is behind her, wrapping his arms around the woman’s waist and embracing her. He smiles at her lovingly and pulls her close to himself. Their physical connection is warm and intimate.
+* They are sitting comfortably on the horse’s saddle.
+
+Clothing & Appearance
+* The woman is dressed in a soft rural-folkloric outfit. She wears a cream-colored linen blouse with puff sleeves and an open neckline, layered with a dark burgundy velvet vest. The linen and velvet textures are clearly visible.
+* The man wears a simple, comfortable white linen shirt.
+* The clothing has natural folds and realistic, clearly defined fabric textures.
+
+Environment & Background
+* An open landscape, with hilly and mountainous areas in the background. Blurred, distant hills with dense trees on the left side.
+* A softly cloudy sky at sunset with gentle light. The ground is covered with wild grass.
+* The background is completely blurred with creamy bokeh, keeping the focus on the couple and the horse.
+
+Props & Details
+* A dark brown horse with a thick, dark mane is in the foreground. Part of the horse’s head and its mane are clearly visible.
+* The horse’s leather bridle and part of the saddle are visible. The leather has a real, aged texture.
+* Detailed facial skin texture, the woman’s long hair, the man’s beard, and the texture of the horse’s mane.
+
+Lighting
+* Natural, soft, gentle golden-hour light at sunset.
+* Soft, diffused shadows with no harsh shadows.
+* Gentle backlighting that separates the couple from the background. The overall feeling is peaceful sunset atmosphere.
+
+Camera Settings
+* Vertical portrait photography.
+* 85mm f/1.8 or 50mm f/1.4 lens.
+* Very shallow depth of field, creamy background bokeh.
+* Precise focus on the couple’s faces and the horse in the foreground.
+* Analogue photography feel with natural film grain.
+* Fast shutter speed to capture the moment while preserving soft textures.
+
+Color Grading & Style
+* Warm, rich, natural colors. Burgundy, cream, and warm brown tones dominate.
+* Natural analogue film aesthetic, with film texture. Soft colors and low contrast.
+* Completely realistic and natural appearance.
+
+Realism Details
+* Realistic textures of fabric (linen, velvet), skin, hair, and leather. Natural skin details on the hands and faces.
+* Thick, tousled mane of the horse. Natural folds in the clothing.
+* Light dust particles in the air.
+* Natural imperfections in the environment (wild grass, blurred tree branches).
+
+Final Quality Tags
+* 8k, ultra-photorealistic, highly detailed, professional photography, cinematic, documentary style, natural light, analogue film style.
+
+Aspect ratio: 9:16""",
+
+    "دلتنگ": """Use the uploaded reference image as the primary visual reference, and recreate the image as accurately and closely as possible. Preserve the exact original composition, framing, camera angle, perspective, subject placement, proportions, lighting, shadows, contrast, environment, and overall visual feeling of the reference image.
+
+Create an ultra-realistic, cinematic black-and-white photograph of a young man sitting alone on the floor of a modern, dark living room at night.
+    The young man is positioned in the lower-right portion of the frame, sitting casually with one knee bent. His body is slightly turned toward the left, while his elbow rests on his raised knee and his hand supports the side of his face. He quietly looks toward the large television screen on the left side of the room, with a distant, thoughtful, slightly melancholic expression.
+
+The television occupies a large portion of the left side of the composition and displays a close-up black-and-white portrait of a young woman. Only part of her face and upper body are visible. She is gently resting her face against her hand, creating an intimate and emotional visual moment.
+
+The television screen is the primary light source in the room. Its soft grayscale glow illuminates the young woman's face displayed on the screen and casts very subtle reflected light onto the young man's face, hair, arm, and the nearby floor.
+
+Keep the rest of the living room extremely dark and dramatically underexposed, exactly like the reference image. Preserve the subtle details visible within the shadows, including a modern low TV console beneath the television, a dark sofa in the background, a tall indoor plant near the center-left, shelves containing small objects, framed photographs or artwork on the wall, and a dark textured area rug covering the floor.
+
+Preserve the large amount of empty, dark negative space in the upper and central portions of the image. The television must remain the dominant visual element on the left side, while the young man remains clearly visible in the lower-right portion.
+
+Strict monochrome black-and-white photography. Deep blacks, soft gray midtones, subtle highlights, natural skin texture, realistic facial details, individual realistic hair strands, authentic clothing and fabric texture, physically accurate shadows and reflections.
+
+The image should look like a genuine spontaneous photograph captured late at night during a quiet and private moment, not like a staged studio portrait. The atmosphere should be intimate, lonely, emotional, cinematic, and contemplative. Vertical 9:16 composition. Preserve the same camera height, camera distance, perspective, framing, and spatial relationships between the television, the young man, the furniture, and the rest of the room as shown in the uploaded reference image.
+
+Realistic low-light photography, cinematic documentary photography, subtle natural film grain, smooth tonal transitions, realistic exposure, natural lens rendering, extremely detailed textures, professional photography quality, ultra-photorealistic, 8K quality.
+
+DO NOT change the fundamental composition of the reference image.
+DO NOT move the young man from his position.
+DO NOT change the placement of the television.
+DO NOT brighten the room.
+DO NOT add any additional people or objects.
+DO NOT add any colors.
+DO NOT make the scene look like a studio photograph.
+Preserve the darkness, atmosphere, perspective, framing, and visual balance of the uploaded reference image as accurately as possible. NEGATIVE PROMPT""",
+
+    "رابطه": """Structured Photography Prompt: Over-the-Shoulder Embrace
+
+Identity & Subject
+
+- Main Subject: A close-up over-the-shoulder portrait of a young woman embracing a man from behind and looking over his shoulder.
+- Female Subject: Preserve her exact facial structure and expressive eyes. Her gaze is deep, direct, and slightly contemplative.
+- Male Subject: Seen from behind, occupying most of the foreground. He has naturally dark, curly, textured hair.
+
+Pose & Body Language
+
+- Embrace: A warm, secure, and intimate embrace. The woman's face is positioned behind the man's shoulder, looking directly into the camera so that only her eyes and eyebrows are visible within the frame.
+- Hand: Part of the woman's hand and fingers are naturally resting on the man's shoulder. The pose must feel completely natural, relaxed, and intimate.
+- Connection: The emotional connection between the two subjects is conveyed primarily through the woman's gaze.
+
+Clothing & Appearance
+- Man's Clothing: A simple black T-shirt. The intricate fabric texture must be rendered with extremely high fidelity.
+- Woman's Hair: Dark, slightly tousled hair falling naturally over the man's shoulder and framing her eyes.
+- Man's Hair: Natural, dark curls with realistic individual strands and texture.
+
+Environment & Background
+
+- Location: A softly blurred outdoor environment with gentle natural light and creamy bokeh.
+- Background Elements: Warm green and earthy tones reminiscent of a garden or park. The background must be completely out of focus to isolate the subjects.
+
+Props & Details
+
+- Extremely accurate and delicate clothing texture.
+- Individually separated, naturally rendered hair strands.
+- Natural catchlights and realistic reflections of light in the woman's eyes.
+- Natural, soft facial skin texture.
+
+Lighting
+
+- Light Direction: Soft, warm, natural Golden Hour light coming from behind and slightly from the side, creating a subtle rim light along the hair and shoulders while gently illuminating the woman's face.
+- Quality: Diffused, soft, warm, cinematic lighting with smooth tonal transitions.
+
+Camera Settings
+
+- Composition: Tight close-up, over-the-shoulder framing.
+- Lens: 85mm prime lens, f/1.4.
+- Aperture: Extremely shallow depth of field, f/1.8 or f/1.4. Critical focus must be exceptionally sharp on the woman's eyes and the relevant foreground textures, while the background has smooth, creamy bokeh.
+- Focus: Critical, precise focus on the woman's eyes.
+- Film Grain: Fine, natural film grain for an authentic analog photography aesthetic.
+- Format: Full-frame sensor, RAW photography.
+
+Color Grading & Style
+
+- Style: Cinematic, intimate, authentic, analog film photography.
+- Color Palette: Warm, organic tones including olive green, copper, deep brown, and natural skin tones. Warm color grading with a subtle desaturated finish.
+
+Realism Details
+
+- Subtle, natural skin imperfections.
+- Visible skin pores and realistic hair follicles.
+- Natural wear and subtle texture variations in the fabric.
+- Natural moisture and realistic reflections in the eyes.
+- No artificial skin smoothing, plastic skin, or overly polished appearance.
+
+Final Quality Tags
+
+RAW photo, ultra-high resolution, 8K, photorealistic, hyper-realistic, award-winning cinematography, intimate portrait, Hasselblad color.
+
+Aspect Ratio
+
+9:16 vertical composition""",
+
+    
     "تراس": """Create an extremely photorealistic professional portrait of the exact same young Middle Eastern woman from the reference image. Preserve her identity, facial structure, proportions, and unique facial features exactly. Long, thick, dark, naturally wavy hair.
 Seated on a black rattan chair, body slightly turned left, head facing the camera. Right hand gently lowers small dark oval sunglasses so her eyes look directly and confidently over the glasses. Left hand rests naturally on her thigh. Legs crossed.
 Light cream/off-white textured linen shirt over a plain white crew-neck T-shirt, sleeves rolled to the elbows. Dark chocolate-brown leggings. Natural matte makeup emphasizing eyes and matte lips.
