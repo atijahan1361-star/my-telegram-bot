@@ -156,7 +156,234 @@ RAW photo, ultra-high resolution, 8K, photorealistic, hyper-realistic, award-win
 Aspect Ratio
 
 9:16 vertical composition""",
+    "خیابان": """Do not beautify, redesign, slim, reshape, alter, or retouch the face.
+Preserve the makeup style and natural facial appearance exactly as shown in the reference image.
 
+POSE & MOVEMENT
+
+The person should be naturally walking toward the camera while looking slightly to the side, maintaining exactly the same pose and gesture as in the reference image.
+
+CLOTHING
+
+An oversized dark burgundy/wine-red button-up shirt with long sleeves and clearly visible front buttons.
+
+Matching burgundy/wine-red wide-leg trousers.
+
+A fitted light beige/cream top underneath.
+
+A light beige/cream hijab naturally wrapped around the head and neck, with the hair freely and naturally flowing out from underneath the scarf.
+
+Clean white sneakers.
+
+
+ACCESSORIES & OBJECTS
+
+A transparent plastic takeaway cup containing a light-colored iced drink, held in the person's right hand, including the lid and straw.
+
+A transparent plastic/shopping bag hanging from the other hand.
+
+
+CAMERA & COMPOSITION
+
+A vertical portrait photograph captured from a slightly elevated camera angle, looking downward toward the subject.
+
+The person should be positioned in the lower-middle portion of the frame, with the pedestrian zebra crossing extending into the background toward the depth of the image.
+
+BACKGROUND
+
+Preserve the asphalt road and pedestrian zebra crossing.
+
+Preserve the alternating horizontal stripes in light white/beige and dark asphalt, including their spacing, perspective, texture, cracks, imperfections, natural wear, and all realistic surface details.
+
+Do not add any cars, buildings, people, signs, or other objects.
+
+LIGHTING
+
+Warm natural daylight, including soft sunlight, subtle shadows, natural exposure, and slightly warm cinematic color grading.
+
+Preserve the natural shadow beneath and around the person.
+
+PHOTOGRAPHIC REALISM
+
+The image must look like a real, completely photorealistic photograph:
+
+Natural skin texture
+
+Realistic fabric texture
+
+Physically accurate, natural shadows
+
+Realistic asphalt texture
+
+Natural depth and perspective
+
+Very subtle film grain
+
+Natural dynamic range
+
+High detail
+
+Professional DSLR-quality photography
+
+50–85mm lens appearance
+
+Realistic perspective
+
+Soft, natural depth of field
+
+Very natural HDR without any artificial or processed appearance"""
+    "قلب": """The identity of both faces must be completely consistent with the attached reference image.
+ 
+A young couple in an intimate, romantic kiss. The man, with black hair, leans toward the woman in profile and kisses her cheek. The woman has full eyebrows, mascara-coated eyelashes, and a gentle smile, with her eyes closed. She leans her cheek toward the man and slightly raises her left shoulder. Their bodies are close and touching.
+ 
+The man is wearing a loose, long-sleeved mauve hoodie, light-wash blue jeans with a small tear on the right thigh, and a classic silver wristwatch on his left wrist. A tattoo on his forearm is visible.
+ 
+The woman is wearing a loose black hoodie with the hood over her head and the drawstrings hanging down, black pants, and messy black hair partially coming out from underneath the hood.
+ 
+An outdoor autumn setting with oak and maple trees and orange, red, brown, and yellow leaves
+Dry leaves are visible on the ground. Warm late-afternoon sunlight shines through the trees.
+ 
+Natural, soft golden-hour lighting coming from the right and behind the couple, with gentle shadows. Eye-level camera, 50–85mm lens, approximately f/1.8 aperture, shallow depth of field, and a creamy bokeh background. The couple is centered in the frame and in sharp focus.
+ 
+Candid street photography, ultra-realistic, warm and natural autumn color grading, analog film look with subtle grain, soft contrast, and natural details in the skin, hair, clothing, and leaves."""
+import os
+import telebot
+from flask import Flask, request
+
+# تنظیمات اولیه ربات و توکن
+TOKEN = "8356687289:AAEDn3FtCDVl C0vYNRJjPr Ltrd8pzktwmg"
+bot = telebot.TeleBot(TOKEN)
+CHANNEL_ID = "@xi_prompt_channel"
+
+# دیکشنری حاوی تمام پرامپت‌ها (شامل پرامپت‌های قبلی و پرامپت‌های جدید دهه ۵۰)
+prompts_data = {
+    "تراس": """Create an extremely photorealistic professional portrait of the exact same young Middle Eastern woman from the reference image. Preserve her identity, facial structure, proportions, and unique facial features exactly. Long, thick, dark, naturally wavy hair.
+Seated on a black rattan chair, body slightly turned left, head facing the camera. Right hand gently lowers small dark oval sunglasses so her eyes look directly and confidently over the glasses. Left hand rests naturally on her thigh. Legs crossed.
+Light cream/off-white textured linen shirt over a plain white crew-neck T-shirt, sleeves rolled to the elbows. Dark chocolate-brown leggings. Natural matte makeup emphasizing eyes and matte lips.
+Small oval sunglasses with thin gold frame and dark lenses. White round-face wristwatch on left wrist. Thin layered necklaces with small gold heart pendants plus one smaller single pendant. Simple gold bracelet on right wrist. Silver ring on right index finger Outdoor urban terrace/balcony. Dark black-and-gray marble wall with white veins behind her and a black metal railing. Dense green trees with dappled sunlight behind the railing; softly blurred residential buildings in the distance. Detailed marble veining and foliage.
+Warm, soft natural late-afternoon golden-hour light from front-right. Soft natural shadows, subtle backlight on foliage, warm highlights on hair and linen clothing.
+Professional DSLR, 85mm prime lens, f/2.2, 1/500s, ISO 200. 3:4 vertical medium portrait. Precise focus on the eyes, shallow depth of field and natural background bokeh.
+Natural realistic urban lifestyle photography, warm natural color palette, realistic skin tone and texture, individual hair strands, natural clothing folds, detailed linen and rattan textures, authentic skin pores, subtle natural film grain, RAW-photo appearance, sharp focus, no artificial or AI-generated look.""",
+
+    "پرامپت_اول_دهه۵۰": """Portrait & Subjects
+A medium portrait of a young Iranian couple, a woman and a man, with authentic Iranian appearance and identity reflecting the 1950s Persian/Iranian aesthetic. The woman (on the left) has distinctive facial features, thin arched eyebrows, and a gentle smile. The man (on the right) has a strong, angular facial structure, dark eyes, thick and well-defined eyebrows, and a gentle smile. The exact identity, facial characteristics, and facial proportions of both subjects must be preserved accurately.
+
+Pose & Body Language
+They are sitting side by side on green grass in an outdoor setting. Their pose is intimate, warm, and friendly. The man has his left arm affectionately around the woman's right shoulder, with his hand naturally hanging down. The woman gently places her right hand on the man's left hand resting on her shoulder, holding his hand affectionately. Both subjects look directly and confidently at the camera. The woman's body is slightly leaning toward the right, while the man's body is slightly leaning toward the left.
+
+Clothing & Appearance
+Woman: A colorful long-sleeved patchwork blouse made from different fabrics and patterns, including plaid, floral, and solid fabrics, in shades of red, yellow, blue, and green. Natural wrinkles and folds in the cotton fabric. Simple black trousers. Voluminous, wavy 1950s-style hair with light caramel highlights.
+
+Man: A dark navy polo shirt with a collar and three large white buttons. Textured pique-knit polo fabric. Fine white-and-black/dark-navy houndstooth trousers. Dark, voluminous 1950s-style hair.
+
+Environment & Background
+An outdoor setting with the couple sitting on naturally green grass. The background is completely out of focus with strong, soft bokeh, featuring dense green trees, foliage, and bushes with gentle patches of diffused light. The foreground contains visible natural grass.
+
+Props & Details
+Woman: A necklace with a circular red pendant, a delicate gold chain bracelet on her right wrist, and dark red nail polish.
+
+Man: A gold chain bracelet on his left wrist.
+
+Show realistic fabric textures and fine details in the woman's patchwork blouse, the man's textured pique polo shirt, and his houndstooth trousers. Preserve natural hair texture and the rough, organic texture of the grass.
+
+Lighting
+Soft, warm natural daylight, suggesting late afternoon. No harsh direct sunlight. Soft shadows fall naturally across their faces and clothing. The overall atmosphere should evoke the warm, fading light of late day.
+
+Camera Settings
+Photographed with a vintage analog film camera with the aesthetic of a 1950s-era photograph. Medium focal length, approximately 80mm. Moderate aperture around f/5.6–f/8, providing controlled depth of field while keeping the background extremely soft and blurred. Precise focus on both subjects' faces. Moderate shutter speed. Authentic analog film texture with clearly visible but subtle film grain.
+
+Color Grading & Style
+Vintage analog film portrait photography. Slightly faded, warm colors with a subtle vintage tint. Clearly visible natural film grain. Natural contrast and tonal range, with no artificial digital processing or over-polishing. The image should unmistakably feel like an old photograph.
+
+Realism Details
+Highly realistic natural textures throughout: authentic cotton and textured fabric, individual strands and natural texture of the hair, rough grass, realistic skin pores, subtle veins, natural smile lines, and minor imperfections of real skin. No artificial beauty filters or excessive skin smoothing. Soft natural reflections on the gold jewelry and dark red nail polish. Clothing should show realistic wrinkles and folds consistent with their seated pose and body positioning.
+
+Final Quality Tags
+Highly realistic, authentic analogue film quality, 35mm photograph, 1950s aesthetic, vintage photography, natural textures, realistic skin, subtle film grain, candid intimate moment, sharp focus on both subjects, soft cinematic bokeh, warm faded tones, authentic old photograph, no digital look.
+
+Aspect Ratio: 9:16
+Important: The final image must have visible film grain and unmistakably look like an old vintage photograph rather than a modern digitally processed image.""",
+
+    "پرامپت_دوم_دهه۵۰": """Identity & Subject
+A portrait of a young Iranian couple with an authentic Iranian appearance and identity from the 1950s. A man with distinctive facial structure, dark and voluminous hair (cut in a short 1950s style), brown eyes, thick eyebrows, and a gentle smile. A woman with distinctive facial structure, dark hair styled in a very voluminous and distinctive 1950s bouffant, subtle makeup, and a gentle smile. The exact identity, facial structure, proportions, and unique features of both subjects must be fully preserved.
+
+Pose & Body Language
+They are sitting on large boulders in an open mountainous environment. An intimate and friendly pose. The man has his right arm affectionately around the woman's left shoulder, with his left hand resting on his leg. The woman is positioned slightly forward and leaning slightly to the right, holding her hands in front of her body and holding sunglasses in her right hand. Both look directly and warmly at the camera.
+
+Clothing & Appearance
+Woman: A short, sleeveless, light lemon-yellow dress with a textured crepe fabric and decorative buttons on the front. Voluminous 1950s bouffant hairstyle. A gold bracelet on her right wrist. A watch is visible on the man's left wrist (the arm around her shoulder).
+
+Man: A light pink short-sleeved collared shirt (cotton) and cream-beige trousers. Dark, voluminous 1950s hair. Bare feet with thin white cotton socks. Sport shoes placed on the grass.
+
+Environment & Background
+Open outdoor hills and mountainous terrain. Large, rough boulders on which they are sitting. The foreground is filled with wild grass and native plants. Green hills are visible in the midground, with mountains in the distant background. A sky with white, puffy clouds. A smaller stone wall on the right side of the background.
+
+Props & Details
+Sunglasses (with dark frames and dark lenses) in the woman's hand. Gold bracelet on the woman's wrist. Wristwatch on the man's left wrist (the arm around the woman's shoulder). A pair of men's sport shoes (white with dark details) on the grass near the man's feet. Precise details of the texture of the boulders.
+
+Lighting
+Soft, warm natural daylight (probably late afternoon). Direct but not harsh sunlight, creating soft and natural shadows on the faces and clothing.
+
+Camera Settings
+Photographed with an analog camera (probably 35mm film from the 1950s). Medium focal length (such as 80mm). Moderate aperture for controlled depth of field (f/5.6 - f/8) so that the mountain background is slightly softened. Precise focus on both subjects' faces. Moderate shutter speed. A distinct yet subtle analog film grain texture. A square or approximately square framing with borders that evoke the feeling of an old photographic print.
+
+Color Grading & Style
+Vintage analog film photography. Warm, slightly faded colors with controlled saturation (faded but warm). 1950s color tonality with natural colors while retaining an old and nostalgic feeling. The appearance of a photographic print on old photo paper. Balanced contrast.
+
+Realism Details
+Realistic fabric textures (cotton shirt, textured woman's dress), roughness of the rocks, details of the grass and plants. Skin with natural imperfections (pores, veins, smile lines) without artificial filters. Detailed hair texture and the woman's voluminous bouffant hairstyle. Subtle reflections of light on the sunglasses and bracelet. Slight dust or mild aging/wear on the printed photograph.
+
+Final Quality Tags
+Highly realistic, analogue film quality, 35mm photograph, 1950s aesthetic, vintage photography, natural textures, candid moment, sharp focus on subjects, cinematic grain, MASTERPIECE.
+
+Aspect Ratio: 9:16""",
+
+    "پرامپت_سوم_دهه۵۰": """Preserve the facial identity of the reference.
+
+A young woman with a 1950s Western/Persian-era appearance and heavy 1950s eye makeup. Eyes with prominent eyeliner and mascara, dark and well-shaped eyebrows, a calm expression, and a direct gaze. Precisely preserve the facial shape and nostalgic proportions.
+
+Pose & Body Language
+A semi-standing seated/squatting pose with a classical guitar. Left hand on the guitar fretboard, forming chords; right hand on the guitar body, ready to play. Body slightly angled while the head faces the camera. A natural pose that is engaged with the instrument.
+
+Clothing & Appearance
+A fitted turtleneck sweater with a bold geometric pattern (color blocks of yellow, orange, blue, and green). Classic blue jeans. Very short, dark, puffy, and voluminous hair in a distinctive 1950s hairstyle.
+
+Environment & Background
+A lush outdoor setting (park or garden). Trees in the background with shallow depth of field and soft bokeh. The ground has a smooth surface with a muted purple/pink color tone.
+
+Props & Details
+A classical guitar (acoustic with nylon strings), with a warm-toned wooden body. Precise attention to the placement of the fingers on the strings and frets.
+
+Lighting
+Soft, diffused natural daylight. No harsh shadows, creating the feeling of being under the shade of trees or on a bright overcast day.
+
+Camera Settings
+Simulate a 35mm analog film camera. Focal length approximately 50mm to 85mm. Wide aperture (f/2.8 to f/4) to blur the background. Sharp focus on the face and guitar.
+
+Color Grading & Style
+Vintage film look. Saturated colors in the clothing (subtle Technicolor aesthetic), with a slight green/yellow color cast in the background. Distinct film grain.
+
+Realism Details
+Knitted texture of the sweater, weave and fibers of the denim fabric, matte reflection on the wooden guitar body. Natural skin texture (without plastic retouching), mechanically accurate finger positioning while playing the guitar.
+
+Final Quality Tags
+Highly realistic, photorealistic, 1950s aesthetic, analogue film photography, 35mm lens, vintage color grading, classical guitar player, sharp focus on face, natural lighting, cinematic film grain, MASTERPIECE.
+
+The photograph must have visible film grain and clearly look like an old photograph."""
+}
+
+# فرمان ربات برای ارسال هر سه پرامپت دهه ۵۰ با ارسال عدد ۵۰ توسط مخاطب
+@bot.message_handler(func=lambda message: message.text == '50' or message.text == '۵۰')
+def send_fifties_prompts(message):
+    bot.send_message(message.chat.id, f"🎬 پرامپت اول (دهه ۵۰):\n\n{prompts_data['پرامپت_اول_دهه۵۰']}")
+    bot.send_message(message.chat.id, f"🎬 پرامپت دوم (دهه ۵۰):\n\n{prompts_data['پرامپت_دوم_دهه۵۰']}")
+    bot.send_message(message.chat.id, f"🎬 پرامپت سوم (دهه ۵۰):\n\n{prompts_data['پرامپت_سوم_دهه۵۰']}")
+
+# اجرای ربات
+if __name__ == "__main__":
+    bot.infinity_polling()
+
+    
     "ژست": """Portrait:
 A medium close-up portrait of a young woman. Her exact identity, facial proportions, and unique individual features must be fully preserved.
 
@@ -210,6 +437,17 @@ Realism Details
 Final Quality Tags
 
 Photorealistic, 8K UHD, professional photography, studio portrait quality, natural look, extremely detailed, cinematic bokeh, 35mm film grain, DSLR, RAW, photorealistic masterpiece.""",
+    "شهر": """Preserve the identity of the reference face, 9:16 frame.
+The subject is walking and taking a step, with her body slightly turned and facing the camera. One hand is fully above her head, holding the strings of the balloons; the other hand is down and slightly away from the body. One of her legs is in the process of taking a step. Her head and gaze are directed upward, straight toward the balloons. A warm and natural smile. Her hair, clothing, and the balloons are affected by movement and wind.
+A light cream-colored thick teddy/sherpa jacket with dense, fluffy texture, a wide collar, loose fit, visible stitching, and a large pocket/patch on the front. Long sleeves with natural fabric folds. Dark clothing is slightly visible underneath the jacket. Several delicate gold bracelets.
+Very long, thick, dark hair, worn loose and free over the shoulders and down the back, with natural waves and slightly messy movement caused by motion and wind, along with realistic flyaways. Wide, dark eyebrows, long and full eyelashes, defined eyeliner, skin with a natural glow, glossy pink/nude lips.
+
+A city street at night; dark trees and vegetation in the background, the street and passing cars. Car headlights appear as light streaks due to motion. Warm streetlights in the background. A real, natural, non-studio environment.
+
+A large cluster of black, bright pink, pastel pink, and off-white/pinkish-white latex balloons above her head. Several balloons are close to the camera and appear larger, with some balloons extending outside the frame. Long, thin ribbons moving in the wind. Natural reflections of light on the glossy balloon surfaces.
+
+Nighttime street lighting with warm light around 2800–3500K. Warm light on the face, hair, and clothing. Direct and very soft smartphone-flash-like light on the face and front of the clothing. Vertical 3:4, knee-up framing, straight-on camera angle. 35–40mm full-frame equivalent, f/2.0–f/2.8, 1/15–1/30 sec, ISO 800–1600. Focus on the face and eyes with subtle motion blur on moving elements. Medium depth of field; the background remains recognizable. Candid and spontaneous composition.""",
+
 
     "عشق": """This image shows a romantic and intimate portrait of a young couple on a beach by the sea. The male subject has a warm and friendly smile. The female subject has a face matching the reference photo and long, dark hair with a natural wavy texture. The identity, facial structure, proportions, and unique facial features of both subjects are preserved with complete accuracy.
 
@@ -428,23 +666,11 @@ Aspect ratio: 9:16""",
 [جزئیات فنی]: عمق میدان بسیار کم (Very shallow depth of field)، با فوکوس فوق‌العاده دقیق روی چشم‌های هر دو سوژه (چشم عسلی زن و چشم تیره پرنده). بافت پرها و موی زن با جزئیات بالا ثبت شده است.
 [پالت رنگ و حس]: پالت گرم (کرم، طلایی، زرد، قرمز تند). حس آرامش، صمیمیت، پیوند عاطفی عمیق و اعتماد.""",
 
-    "طبیعت": """A girl with very long hair, wearing a flowing and ruffled white lace top and light blue jeans with a black belt, is standing on the street. A strong and intense wind blows her hair powerfully to the right. Her left hand delicately touches a strand of flying hair, while her right hand is raised and covers her eyes to protect them from the sunlight, creating a soft shadow across her face. Her head is turned to the right, her gaze directed into the distance, and her facial expression is calm and confident.
-The image frame is designed as a close medium shot, with the main focus on her upper body and face. In the background, a peaceful lakeside landscape can be seen; a still lake with green and natural vegetation surrounding it.
+    "طبیعت": """Create an ultra-realistic casual smartphone photo of a young woman outdoors sitting on grass. She has long voluminous dark-brown wavy hair, parted naturally, and tilts her head slightly toward the camera with a warm genuine smile. She wears a white sleeveless fitted dress with a soft flowing skirt and thin metallic bracelets. Her arms rest crossed naturally in front of her. Bright natural afternoon sunlight creates soft highlights and gentle shadows across her face and hair, with a blurred green garden background. Slightly soft low-quality smartphone camera, natural imperfect exposure, subtle compression and grain, authentic candid photography, no flash, 2:3, no artificial AI look.
+Ultra-realistic natural skin texture, clearly visible fine pores and micro-pores, realistic peach fuzz, subtle skin lines, tiny imperfections and natural unevenness in skin tone. Keep the original facial identity and facial structure unchanged. Skin is smooth only where naturally smooth, never artificially perfect. No skin retouching, no airbrushing, no blur, no beauty filter, no waxy or plastic appearance. Realistic sebaceous shine and tiny specular highlights on the nose, cheeks and lips, highly detailed pores visible in close-up, authentic smartphone photography skin texture.
 
-Sunlight comes from the right side, creating a beautiful warm and golden glow on her hair and shoulders and highlighting the texture of the clothing. The overall lighting is natural and bright, evoking the atmosphere of sunrise or sunset.
+Negative: plastic skin, wax skin, porcelain skin, airbrushed skin, overly smooth skin, blurred pores, missing pores, CGI skin, doll skin, beauty filter, excessive skin retouching, artificial smoothness, fake texture, oversharpened skin, unrealistic complexion"""
 
-The colors are predominantly warm and natural: golden highlights alongside various shades of green in the foliage. The white color of her clothing stands out beautifully and receives the light softly and naturally.
-
-The image style is naturalistic yet delicate and elegant, with an emphasis on beauty and fashion. The overall atmosphere is calm, soft, and slightly dreamy, conveying a sense of elegance and tranquility.
-
-Important details that must be reproduced carefully include subtle makeup and soft golden-hour lighting.
-The interaction of light and shadow on her face and hand is extremely important. The clear distinction between the calm surface of the lake and the blurred and scattered vegetation in the background must be preserved.
-
-Image aesthetics: futuristic fashion editorial with a High-Gloss effect, ultra-high resolution.
-
-Aspect ratio 9:16, photograph with extremely high detail, 8K quality, very sharp and powerful flash. The image should feel relaxed and natural, with the atmosphere of an “unedited” social media photo; with natural colors, extremely detailed textures in the fabrics and surrounding environment, an everyday and natural atmosphere, and the feel of natural stock lifestyle photography, without heavy processing and without filters.
-
-8K quality, ultra-sharp, very sharp flash, and more visible Grain.""",
 
     "چشم": """Создай ультрареалистичный премиальный портрет, полностью сохранив мою индивидуальность и узнаваемость. Не изменяй мои естественные черты лица, форму и пропорции, геометрию лица, костную структуру, форму глаз, носа, губ, бровей, натуральную текстуру кожи, возраст, выражение лица и причёску. Лицо должно остаться максимально похожим на исходное изображение. Разрешено изменять только макияж, освещение и художественную обработку.
 Композиция: Экстремально крупный план (Extreme Close-Up). В кадре главным объектом является один видимый глаз, который частично выглядывает сквозь длинные волосы с мягкими крупными волнами, падающими на лицо. Остальная часть лица находится в естественном мягком размытии (Soft Blur) и частично скрыта или обрезана. Внимание полностью сосредоточено на глазе и взгляде.
