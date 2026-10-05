@@ -1,261 +1,19 @@
-import os
-import telebot
-from flask import Flask, request
-
-TOKEN = "8556687289:AAEOn3FtCDVrC0mYNRZJPrLtrd0p2kKvmwg"
-bot = telebot.TeleBot(TOKEN)
-CHANNEL_ID = "@ai_prompt_channel"
-
-# بانک کامل پرامپت‌های شما (۲۳ پرامپت)
-prompts_data = {
-    "اسب": """* An intimate and romantic portrait of a young couple, a man and a woman, riding together on a horse.
-* The woman is seated in front. Her long, dark, wavy hair falls beautifully over her shoulders. Her gaze is directed downward, and she has a gentle, calm smile on her lips.
-* The man is seated behind the woman. He has neat, dark hair and a well-groomed beard and mustache. He looks at the woman with a wide, loving smile and tilts his head toward her. Their faces are preserved with complete accuracy.
-
-Pose & Body Language
-* The woman gently rests her head toward the man. Her hands are placed on the horse’s neck and mane.
-* The man is behind her, wrapping his arms around the woman’s waist and embracing her. He smiles at her lovingly and pulls her close to himself. Their physical connection is warm and intimate.
-* They are sitting comfortably on the horse’s saddle.
-
-Clothing & Appearance
-* The woman is dressed in a soft rural-folkloric outfit. She wears a cream-colored linen blouse with puff sleeves and an open neckline, layered with a dark burgundy velvet vest. The linen and velvet textures are clearly visible.
-* The man wears a simple, comfortable white linen shirt.
-* The clothing has natural folds and realistic, clearly defined fabric textures.
-
-Environment & Background
-* An open landscape, with hilly and mountainous areas in the background. Blurred, distant hills with dense trees on the left side.
-* A softly cloudy sky at sunset with gentle light. The ground is covered with wild grass.
-* The background is completely blurred with creamy bokeh, keeping the focus on the couple and the horse.
-
-Props & Details
-* A dark brown horse with a thick, dark mane is in the foreground. Part of the horse’s head and its mane are clearly visible.
-* The horse’s leather bridle and part of the saddle are visible. The leather has a real, aged texture.
-* Detailed facial skin texture, the woman’s long hair, the man’s beard, and the texture of the horse’s mane.
-
-Lighting
-* Natural, soft, gentle golden-hour light at sunset.
-* Soft, diffused shadows with no harsh shadows.
-* Gentle backlighting that separates the couple from the background. The overall feeling is peaceful sunset atmosphere.
-
-Camera Settings
-* Vertical portrait photography.
-* 85mm f/1.8 or 50mm f/1.4 lens.
-* Very shallow depth of field, creamy background bokeh.
-* Precise focus on the couple’s faces and the horse in the foreground.
-* Analogue photography feel with natural film grain.
-* Fast shutter speed to capture the moment while preserving soft textures.
-
-Color Grading & Style
-* Warm, rich, natural colors. Burgundy, cream, and warm brown tones dominate.
-* Natural analogue film aesthetic, with film texture. Soft colors and low contrast.
-* Completely realistic and natural appearance.
-
-Realism Details
-* Realistic textures of fabric (linen, velvet), skin, hair, and leather. Natural skin details on the hands and faces.
-* Thick, tousled mane of the horse. Natural folds in the clothing.
-* Light dust particles in the air.
-* Natural imperfections in the environment (wild grass, blurred tree branches).
-
-Final Quality Tags
-* 8k, ultra-photorealistic, highly detailed, professional photography, cinematic, documentary style, natural light, analogue film style.
-
-Aspect ratio: 9:16""",
-
-    "دلتنگ": """Use the uploaded reference image as the primary visual reference, and recreate the image as accurately and closely as possible. Preserve the exact original composition, framing, camera angle, perspective, subject placement, proportions, lighting, shadows, contrast, environment, and overall visual feeling of the reference image.
-
-Create an ultra-realistic, cinematic black-and-white photograph of a young man sitting alone on the floor of a modern, dark living room at night.
-
-The young man is positioned in the lower-right portion of the frame, sitting casually with one knee bent. His body is slightly turned toward the left, while his elbow rests on his raised knee and his hand supports the side of his face. He quietly looks toward the large television screen on the left side of the room, with a distant, thoughtful, slightly melancholic expression.
-
-The television occupies a large portion of the left side of the composition and displays a close-up black-and-white portrait of a young woman. Only part of her face and upper body are visible. She is gently resting her face against her hand, creating an intimate and emotional visual moment.
-
-The television screen is the primary light source in the room. Its soft grayscale glow illuminates the young woman's face displayed on the screen and casts very subtle reflected light onto the young man's face, hair, arm, and the nearby floor.
-
-Keep the rest of the living room extremely dark and dramatically underexposed, exactly like the reference image. Preserve the subtle details visible within the shadows, including a modern low TV console beneath the television, a dark sofa in the background, a tall indoor plant near the center-left, shelves containing small objects, framed photographs or artwork on the wall, and a dark textured area rug covering the floor.
-
-Preserve the large amount of empty, dark negative space in the upper and central portions of the image. The television must remain the dominant visual element on the left side, while the young man remains clearly visible in the lower-right portion.
-
-Strict monochrome black-and-white photography. Deep blacks, soft gray midtones, subtle highlights, natural skin texture, realistic facial details, individual realistic hair strands, authentic clothing and fabric texture, physically accurate shadows and reflections.
-
-The image should look like a genuine spontaneous photograph captured late at night during a quiet and private moment, not like a staged studio portrait. The atmosphere should be intimate, lonely, emotional, cinematic, and contemplative. Vertical 9:16 composition. Preserve the same camera height, camera distance, perspective, framing, and spatial relationships between the television, the young man, the furniture, and the rest of the room as shown in the uploaded reference image.
-
-Realistic low-light photography, cinematic documentary photography, subtle natural film grain, smooth tonal transitions, realistic exposure, natural lens rendering, extremely detailed textures, professional photography quality, ultra-photorealistic, 8K quality.
-
-DO NOT change the fundamental composition of the reference image.
-DO NOT move the young man from his position.
-DO NOT change the placement of the television.
-DO NOT brighten the room.
-DO NOT add any additional people or objects.
-DO NOT add any colors.
-DO NOT make the scene look like a studio photograph.
-Preserve the darkness, atmosphere, perspective, framing, and visual balance of the uploaded reference image as accurately as possible. NEGATIVE PROMPT""",
-
-    "رابطه": """Structured Photography Prompt: Over-the-Shoulder Embrace
-
-Identity & Subject
-
-- Main Subject: A close-up over-the-shoulder portrait of a young woman embracing a man from behind and looking over his shoulder.
-- Female Subject: Preserve her exact facial structure and expressive eyes. Her gaze is deep, direct, and slightly contemplative.
-- Male Subject: Seen from behind, occupying most of the foreground. He has naturally dark, curly, textured hair.
-
-Pose & Body Language
-
-- Embrace: A warm, secure, and intimate embrace. The woman's face is positioned behind the man's shoulder, looking directly into the camera so that only her eyes and eyebrows are visible within the frame.
-- Hand: Part of the woman's hand and fingers are naturally resting on the man's shoulder. The pose must feel completely natural, relaxed, and intimate.
-- Connection: The emotional connection between the two subjects is conveyed primarily through the woman's gaze.
-
-Clothing & Appearance
-
-- Man's Clothing: A simple black T-shirt. The intricate fabric texture must be rendered with extremely high fidelity.
-- Woman's Hair: Dark, slightly tousled hair falling naturally over the man's shoulder and framing her eyes.
-- Man's Hair: Natural, dark curls with realistic individual strands and texture.
-
-Environment & Background
-
-- Location: A softly blurred outdoor environment with gentle natural light and creamy bokeh.
-- Background Elements: Warm green and earthy tones reminiscent of a garden or park. The background must be completely out of focus to isolate the subjects.
-
-Props & Details
-
-- Extremely accurate and delicate clothing texture.
-- Individually separated, naturally rendered hair strands.
-- Natural catchlights and realistic reflections of light in the woman's eyes.
-- Natural, soft facial skin texture.
-
-Lighting
-
-- Light Direction: Soft, warm, natural Golden Hour light coming from behind and slightly from the side, creating a subtle rim light along the hair and shoulders while gently illuminating the woman's face.
-- Quality: Diffused, soft, warm, cinematic lighting with smooth tonal transitions.
-
-Camera Settings
-
-- Composition: Tight close-up, over-the-shoulder framing.
-- Lens: 85mm prime lens, f/1.4.
-- Aperture: Extremely shallow depth of field, f/1.8 or f/1.4. Critical focus must be exceptionally sharp on the woman's eyes and the relevant foreground textures, while the background has smooth, creamy bokeh.
-- Focus: Critical, precise focus on the woman's eyes.
-- Film Grain: Fine, natural film grain for an authentic analog photography aesthetic.
-- Format: Full-frame sensor, RAW photography.
-
-Color Grading & Style
-
-- Style: Cinematic, intimate, authentic, analog film photography.
-- Color Palette: Warm, organic tones including olive green, copper, deep brown, and natural skin tones. Warm color grading with a subtle desaturated finish.
-
-Realism Details
-
-- Subtle, natural skin imperfections.
-- Visible skin pores and realistic hair follicles.
-- Natural wear and subtle texture variations in the fabric.
-- Natural moisture and realistic reflections in the eyes.
-- No artificial skin smoothing, plastic skin, or overly polished appearance.
-
-Final Quality Tags
-
-RAW photo, ultra-high resolution, 8K, photorealistic, hyper-realistic, award-winning cinematography, intimate portrait, Hasselblad color.
-
-Aspect Ratio
-
-9:16 vertical composition""",
-    "خیابان": """Do not beautify, redesign, slim, reshape, alter, or retouch the face.
-Preserve the makeup style and natural facial appearance exactly as shown in the reference image.
-
-POSE & MOVEMENT
-
-The person should be naturally walking toward the camera while looking slightly to the side, maintaining exactly the same pose and gesture as in the reference image.
-
-CLOTHING
-
-An oversized dark burgundy/wine-red button-up shirt with long sleeves and clearly visible front buttons.
-
-Matching burgundy/wine-red wide-leg trousers.
-
-A fitted light beige/cream top underneath.
-
-A light beige/cream hijab naturally wrapped around the head and neck, with the hair freely and naturally flowing out from underneath the scarf.
-
-Clean white sneakers.
-
-
-ACCESSORIES & OBJECTS
-
-A transparent plastic takeaway cup containing a light-colored iced drink, held in the person's right hand, including the lid and straw.
-
-A transparent plastic/shopping bag hanging from the other hand.
-
-
-CAMERA & COMPOSITION
-
-A vertical portrait photograph captured from a slightly elevated camera angle, looking downward toward the subject.
-
-The person should be positioned in the lower-middle portion of the frame, with the pedestrian zebra crossing extending into the background toward the depth of the image.
-
-BACKGROUND
-
-Preserve the asphalt road and pedestrian zebra crossing.
-
-Preserve the alternating horizontal stripes in light white/beige and dark asphalt, including their spacing, perspective, texture, cracks, imperfections, natural wear, and all realistic surface details.
-
-Do not add any cars, buildings, people, signs, or other objects.
-
-LIGHTING
-
-Warm natural daylight, including soft sunlight, subtle shadows, natural exposure, and slightly warm cinematic color grading.
-
-Preserve the natural shadow beneath and around the person.
-
-PHOTOGRAPHIC REALISM
-
-The image must look like a real, completely photorealistic photograph:
-
-Natural skin texture
-
-Realistic fabric texture
-
-Physically accurate, natural shadows
-
-Realistic asphalt texture
-
-Natural depth and perspective
-
-Very subtle film grain
-
-Natural dynamic range
-
-High detail
-
-Professional DSLR-quality photography
-
-50–85mm lens appearance
-
-Realistic perspective
-
-Soft, natural depth of field
-
-Very natural HDR without any artificial or processed appearance"""
-    "قلب": """The identity of both faces must be completely consistent with the attached reference image.
- 
-A young couple in an intimate, romantic kiss. The man, with black hair, leans toward the woman in profile and kisses her cheek. The woman has full eyebrows, mascara-coated eyelashes, and a gentle smile, with her eyes closed. She leans her cheek toward the man and slightly raises her left shoulder. Their bodies are close and touching.
- 
-The man is wearing a loose, long-sleeved mauve hoodie, light-wash blue jeans with a small tear on the right thigh, and a classic silver wristwatch on his left wrist. A tattoo on his forearm is visible.
- 
-The woman is wearing a loose black hoodie with the hood over her head and the drawstrings hanging down, black pants, and messy black hair partially coming out from underneath the hood.
- 
-An outdoor autumn setting with oak and maple trees and orange, red, brown, and yellow leaves
-Dry leaves are visible on the ground. Warm late-afternoon sunlight shines through the trees.
- 
-Natural, soft golden-hour lighting coming from the right and behind the couple, with gentle shadows. Eye-level camera, 50–85mm lens, approximately f/1.8 aperture, shallow depth of field, and a creamy bokeh background. The couple is centered in the frame and in sharp focus.
- 
-Candid street photography, ultra-realistic, warm and natural autumn color grading, analog film look with subtle grain, soft contrast, and natural details in the skin, hair, clothing, and leaves."""
-import os
-import telebot
-from flask import Flask, request
-
-# تنظیمات اولیه ربات و توکن
-TOKEN = "8356687289:AAEDn3FtCDVl C0vYNRJjPr Ltrd8pzktwmg"
-bot = telebot.TeleBot(TOKEN)
-CHANNEL_ID = "@xi_prompt_channel"
-
-# دیکشنری حاوی تمام پرامپت‌ها (شامل پرامپت‌های قبلی و پرامپت‌های جدید دهه ۵۰)
+import logging
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram.ext import ApplicationBuilder, ContextTypes, CommandHandler, CallbackQueryHandler
+
+# ==================== تنظیمات اولیه ====================
+# توکن ربات خود را اینجا وارد کنید
+TOKEN = "YOUR_BOT_TOKEN_HERE"
+
+# فعال‌سازی لاگ‌ها برای بررسی خطاها
+logging.basicConfig(
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    level=logging.INFO
+)
+logger = logging.getLogger(__name__)
+
+# ==================== بانک پرامپت‌ها ====================
 prompts_data = {
     "تراس": """Create an extremely photorealistic professional portrait of the exact same young Middle Eastern woman from the reference image. Preserve her identity, facial structure, proportions, and unique facial features exactly. Long, thick, dark, naturally wavy hair.
 Seated on a black rattan chair, body slightly turned left, head facing the camera. Right hand gently lowers small dark oval sunglasses so her eyes look directly and confidently over the glasses. Left hand rests naturally on her thigh. Legs crossed.
@@ -369,21 +127,8 @@ Knitted texture of the sweater, weave and fibers of the denim fabric, matte refl
 Final Quality Tags
 Highly realistic, photorealistic, 1950s aesthetic, analogue film photography, 35mm lens, vintage color grading, classical guitar player, sharp focus on face, natural lighting, cinematic film grain, MASTERPIECE.
 
-The photograph must have visible film grain and clearly look like an old photograph."""
-}
+The photograph must have visible film grain and clearly look like an old photograph.""",
 
-# فرمان ربات برای ارسال هر سه پرامپت دهه ۵۰ با ارسال عدد ۵۰ توسط مخاطب
-@bot.message_handler(func=lambda message: message.text == '50' or message.text == '۵۰')
-def send_fifties_prompts(message):
-    bot.send_message(message.chat.id, f"🎬 پرامپت اول (دهه ۵۰):\n\n{prompts_data['پرامپت_اول_دهه۵۰']}")
-    bot.send_message(message.chat.id, f"🎬 پرامپت دوم (دهه ۵۰):\n\n{prompts_data['پرامپت_دوم_دهه۵۰']}")
-    bot.send_message(message.chat.id, f"🎬 پرامپت سوم (دهه ۵۰):\n\n{prompts_data['پرامپت_سوم_دهه۵۰']}")
-
-# اجرای ربات
-if __name__ == "__main__":
-    bot.infinity_polling()
-
-    
     "ژست": """Portrait:
 A medium close-up portrait of a young woman. Her exact identity, facial proportions, and unique individual features must be fully preserved.
 
@@ -437,6 +182,7 @@ Realism Details
 Final Quality Tags
 
 Photorealistic, 8K UHD, professional photography, studio portrait quality, natural look, extremely detailed, cinematic bokeh, 35mm film grain, DSLR, RAW, photorealistic masterpiece.""",
+
     "شهر": """Preserve the identity of the reference face, 9:16 frame.
 The subject is walking and taking a step, with her body slightly turned and facing the camera. One hand is fully above her head, holding the strings of the balloons; the other hand is down and slightly away from the body. One of her legs is in the process of taking a step. Her head and gaze are directed upward, straight toward the balloons. A warm and natural smile. Her hair, clothing, and the balloons are affected by movement and wind.
 A light cream-colored thick teddy/sherpa jacket with dense, fluffy texture, a wide collar, loose fit, visible stitching, and a large pocket/patch on the front. Long sleeves with natural fabric folds. Dark clothing is slightly visible underneath the jacket. Several delicate gold bracelets.
@@ -447,7 +193,6 @@ A city street at night; dark trees and vegetation in the background, the street 
 A large cluster of black, bright pink, pastel pink, and off-white/pinkish-white latex balloons above her head. Several balloons are close to the camera and appear larger, with some balloons extending outside the frame. Long, thin ribbons moving in the wind. Natural reflections of light on the glossy balloon surfaces.
 
 Nighttime street lighting with warm light around 2800–3500K. Warm light on the face, hair, and clothing. Direct and very soft smartphone-flash-like light on the face and front of the clothing. Vertical 3:4, knee-up framing, straight-on camera angle. 35–40mm full-frame equivalent, f/2.0–f/2.8, 1/15–1/30 sec, ISO 800–1600. Focus on the face and eyes with subtle motion blur on moving elements. Medium depth of field; the background remains recognizable. Candid and spontaneous composition.""",
-
 
     "عشق": """This image shows a romantic and intimate portrait of a young couple on a beach by the sea. The male subject has a warm and friendly smile. The female subject has a face matching the reference photo and long, dark hair with a natural wavy texture. The identity, facial structure, proportions, and unique facial features of both subjects are preserved with complete accuracy.
 
@@ -470,7 +215,7 @@ Natural skin texture, detailed individual strands of hair, linen and black fabri
 Ultra-realistic, Photorealistic, High-resolution portrait, Cinematic lighting, Natural light photography, Golden Hour, Sharp focus on subjects, Shallow depth of field, Professional photography, Film grain texture, Kodak Portra 400 style, Unedited raw photo quality.
 
 Frame 9:16""",
-    
+
     "سفر": """A young woman with long dark hair tied in a ponytail at the back of her head. The subject’s face is exactly identical to the reference image, in profile view facing right, with her eyes closed and a gentle smile that conveys a sense of peace and freedom. The facial structure, jawline, and facial proportions must be fully preserved.
 
 The subject is standing outside the vehicle with her body facing right, but her chest and head are tilted upward and backward toward the sky. Her right arm is fully extended upward into the air, and her left arm is tilted downward and backward parallel to her body (as in the reference image). This is a pose of liberation, freedom, and enjoying nature. The body appears elongated, and the mechanics of the movement look completely natural and flexible.
@@ -628,32 +373,9 @@ A small natural handled wicker basket filled with a generous amount of ripe blac
 Camera Details (Optional):
 Captured with a Canon EOS R5 camera and an 85mm f/1.4 lens. Aperture set to f/1.8 to create a shallow depth of field and smooth background blur. Featuring a subtle film grain texture to create a professional and cinematic photography feel.""",
 
-    "دریاچه": """Identity & Subject:
-Ultra-realistic professional lifestyle portrait of the young Middle Eastern woman from reference image. Preserve her exact facial identity, facial structure, proportions, features, skin tone, eye shape, nose, lips, and overall likeness. Lightly tanned skin, light hazel eyes, gentle direct gaze. Very long, naturally wavy black hair falling over her shoulders.
-
-Pose:
-Three-quarter body pose, body slightly turned to the right while her head turns back toward the camera. Hands naturally and calmly positioned in front of her body. Relaxed, confident posture, lowered shoulders, subtle head angle.
-Clothing & Accessories:
-White linen shirt and skirt with clearly visible natural linen texture. Detailed colorful floral embroidery on the front of the shirt and skirt waistband in yellow, purple, brown, and green. Sleeves rolled up. Delicate pearl hair accessory. Silver wristwatch with white dial, delicate silver chain bracelet, simple ring, and small stud earrings.
-
-Environment:
-Beautiful calm turquoise-blue lake or sea in the background. Distant shoreline with softly blurred green trees and bushes, natural bokeh. Clear pale-blue sky. Subtle sunlight reflections on the water.
-
-Lighting:
-Strong natural high-key direct midday sunlight coming from the right, creating soft warm shadows. Natural warm light falling directly on the face and body.
-Camera & Composition:
-Vertical portrait orientation, professional lifestyle photography, full-frame DSLR look, Canon 5D Mark IV, 85mm f/2.0 portrait lens, shallow depth of field, tack-sharp focus on the eyes, creamy background bokeh, fast shutter speed, natural perspective.
-
-Color & Realism:
-Natural color grading, vibrant yet realistic turquoise water, clean white linen, vivid embroidery colors, low noise. Preserve natural skin pores, realistic hair strands, linen fibers, embroidery details, and realistic metallic reflections on jewelry and watch.
-
-Final Style:
-Ultra-realistic, photorealistic, highly detailed, professional photography, natural lighting, sharp eyes, realistic skin texture, RAW photo, authentic DSLR photography, no AI look, no artificial skin, no plastic texture.
-Aspect ratio: 9:16""",
-
     "موتور": """هویت چهره مرجع ۱۰۰ درصد حفظ شود * نوع عکس: عکس لایف‌استایل و پرتره خیابانی تمام قد در فضای باز. * سوژه: زن جوانی با ظاهر خاورمیانه‌ای، با موهای تیره و براق که به صورت دم‌اسبی صاف و تمیز بسته شده است، و با لبخندی گرم و ملایم با لبهای بسته رو به دوربین نگاه می‌کند. * پوشش: او یک تی‌شرت سفید اورسایز با یک چاپ گرافیکی از یک اسکوتر صورتی که گلهایی روی آن است، به همراه یک شلوار جین گشاد (باگی) به رنگ آبی روشن و قد بریده شده (کالوت) پوشیده است. او جوراب‌های ساده سفید و کفش‌های کتانی صورتی و سفید ساق‌دار (مانند کانورس) به پا دارد. یک گردنبند ظریف نیز به گردن دارد.
 اشیاء: او در کنار (به اسکوتر تکیه داده) یک اسکوتر وِسپا کلاسیک با رنگ صورتی پاستلی ملایم مات و جذاب ایستاده است. اسکوتر دارای یک شیشه جلوی شفاف، آینه‌های کرومی گرد و چراغ جلوی گرد است و یک جعبه حمل عقب صورتی هماهنگ. روی زین اسکوتر، یک دسته گل بزرگ و پرپشت از گل‌های پئونی (صدتومانی) و گل‌های دیگر در رنگ‌های صورتی، زرد، نارنجی و کرم قرار گرفته است. * ژست: دست های سوژه روی دسته های فرمان اسکوتر را گرفته است به طوریکه انگشتانش به دور دسته فرمان پیچیده شده اند. پای راست که روی پای چپ قرار گرفته است، در وضعیت راحتی ایستاده است.
-پس‌زمینه: یک خیابان سنگفرش شده دنج در فضای باز. در قسمت پیاده رو یک دیوار سنگی قدیمی که بخشی از دیوار با پیچک‌های سبز تیره پوشیده شده است. در پس‌زمینه، قسمت پیاده رو یک درختی با تنه خمیده و برگ‌های سبز متراکم دیده می‌شوند. نور خورشید بعدازظهر از لای درختان عبور می‌کند و الگوی نوری ملایم و گرم (dappled light) ایجاد می‌کند. * نورپردازی: نور طبیعی و نرم خورشید بعدازظهر، با کمی افکت تابش گرم (ساعت طلایی)، که سوژه را به طور یکنواخت روشن کرده است. * ترکیب‌بندی: نمای تمام قد از زن و اسکوتر. اسکوتر در سمت چپ و زن در سمت راست قرار گرفته‌اند و توازن خوبی در قاب ایجاد شده است. پس‌زمینه سنگفرش و پوشش گیاهی روی بخشی از دیوار عمق ایجاد می‌کند. * سبک و تکنیک: عکس شارپ با فوکوس دقیق روی چهره زن و اسکوتر. عمق میدان کم (دیافراگم باز) برای ایجاد بوکه زیبا در پس‌زمینه . عکاسی لایف‌استایل با کیفیت سینمایی و بافت‌های دقیق در لباس و سنگفرش. کادر ۳:۴""",
+پس‌زمینه: یک خیابان سنگفرش شده دنج در فضای باز. در قسمت پیاده رو یک دیوار سنگی قدیمی که بخشی از دیوار با پیچک‌های سبز تیره پوشیده شده است. در پس‌زمینه، قسمت پیاده رو یک درختی با تنه خمیده و برگ‌های سبز متراکم دیده می‌شوند. نور خورشید بعدازظهر از لای درختان عبور می‌کند و الگوی نوری ملایم و گرم (dappled light) ایجاد می‌کند. * نورپردازی: نور طبیعی و نرم خورشید بعدازظهر، با کمی افکت تابش گرم (ساعت طلایی)، که سوژه را به طور یکنواخت روشن کرده است. * ترکیب‌بندی: نمای تمام قد از زن و اسکوتر. اسکوتر در سمت چپ و زن در سمت راست قرار گرفته‌اند و توازن خوبی در قاب ایجاد شده است. پس‌‌زمینه سنگفرش و پوشش گیاهی روی بخشی از دیوار عمق ایجاد می‌کند. * سبک و تکنیک: عکس شارپ با فوکوس دقیق روی چهره زن و اسکوتر. عمق میدان کم (دیافراگم باز) برای ایجاد بوکه زیبا در پس‌زمینه . عکاسی لایف‌استایل با کیفیت سینمایی و بافت‌های دقیق در لباس و سنگفرش. کادر ۳:۴""",
 
     "عروس": """کلوزآپ مدیوم، زاویه سطح چشم، نمای نیم‌رخ راست از پهلو، دوربین از پهلو گرفته شده. کادر عمودی ۹:۱۶
 نمای کادر از سر تا گردن و بخشی از شانه چپ
@@ -665,12 +387,6 @@ Aspect ratio: 9:16""",
 نورپردازی]: نور طبیعی، نرم و پخش‌شده (Soft, diffused light) که بافت‌های مختلف از جمله پرهای ظریف، و نورپردازی جانبی ملایمی روی صورت زن دارد.
 [جزئیات فنی]: عمق میدان بسیار کم (Very shallow depth of field)، با فوکوس فوق‌العاده دقیق روی چشم‌های هر دو سوژه (چشم عسلی زن و چشم تیره پرنده). بافت پرها و موی زن با جزئیات بالا ثبت شده است.
 [پالت رنگ و حس]: پالت گرم (کرم، طلایی، زرد، قرمز تند). حس آرامش، صمیمیت، پیوند عاطفی عمیق و اعتماد.""",
-
-    "طبیعت": """Create an ultra-realistic casual smartphone photo of a young woman outdoors sitting on grass. She has long voluminous dark-brown wavy hair, parted naturally, and tilts her head slightly toward the camera with a warm genuine smile. She wears a white sleeveless fitted dress with a soft flowing skirt and thin metallic bracelets. Her arms rest crossed naturally in front of her. Bright natural afternoon sunlight creates soft highlights and gentle shadows across her face and hair, with a blurred green garden background. Slightly soft low-quality smartphone camera, natural imperfect exposure, subtle compression and grain, authentic candid photography, no flash, 2:3, no artificial AI look.
-Ultra-realistic natural skin texture, clearly visible fine pores and micro-pores, realistic peach fuzz, subtle skin lines, tiny imperfections and natural unevenness in skin tone. Keep the original facial identity and facial structure unchanged. Skin is smooth only where naturally smooth, never artificially perfect. No skin retouching, no airbrushing, no blur, no beauty filter, no waxy or plastic appearance. Realistic sebaceous shine and tiny specular highlights on the nose, cheeks and lips, highly detailed pores visible in close-up, authentic smartphone photography skin texture.
-
-Negative: plastic skin, wax skin, porcelain skin, airbrushed skin, overly smooth skin, blurred pores, missing pores, CGI skin, doll skin, beauty filter, excessive skin retouching, artificial smoothness, fake texture, oversharpened skin, unrealistic complexion""",
-
 
     "چشم": """Создай ультрареалистичный премиальный портрет, полностью сохранив мою индивидуальность и узнаваемость. Не изменяй мои естественные черты лица, форму и пропорции, геометрию лица, костную структуру, форму глаз, носа, губ, бровей, натуральную текстуру кожи, возраст, выражение лица и причёску. Лицо должно остаться максимально похожим на исходное изображение. Разрешено изменять только макияж, освещение и художественную обработку.
 Композиция: Экстремально крупный план (Extreme Close-Up). В кадре главным объектом является один видимый глаз, который частично выглядывает сквозь длинные волосы с мягкими крупными волнами, падающими на лицо. Остальная часть лица находится в естественном мягком размытии (Soft Blur) и частично скрыта или обрезана. Внимание полностью сосредоточено на глазе и взгляде.
@@ -706,75 +422,59 @@ Negative: plastic skin, wax skin, porcelain skin, airbrushed skin, overly smooth
 Максимально реалистичная фотография уровня премиальной рекламной кампании косметики..
 Luxury fashion editorial aesthetic.
 Фотореализм, высокая детализация, натуральная кожа, реалистичный свет.
-Важно: Не менять личность, не менять форму лица, не добавлять новые черты, не омолаживать и не старить, не менять цвет и структуру волос, не делать искусственный или пластиковый эффект кожи. Только профессиональный макияж, мягкое освещение и кинематографическая обработка.""",
+Важно: Не менять личность, не менять форму лица, не добавлять новые черты, не омолаживать и не старить, не менять цвет и структуру волос, не делать искусственный или пластиковый эффект кожи. Только профессиональный ماкияж, мягкое освещение и кинематографическая обработка.""",
 
-    "هرمز": """یک عکس تمام‌قد سینمایی و فوق‌العاده واقع‌گرایانه با وضوح بالا از یک زن جوان متفکر خاورمیانه‌ای که به صورت چهارزانو (نیمه‌نیلوفری) روی مجموعه‌ای بزرگ از صخره‌های رسوبی قرمز و خشن(جزیره هرمز) نشسته است. صحنه در امتداد یک خط ساحلی صخره‌ای قرار دارد و دریای پهناور به رنگ آبی فیروزه‌ای عمیق و آرام تا افق آبی کم‌رنگ زیر نور گرم آفتاب اواخر بعدازظهر گسترش یافته است. زن پوشش اصیل بندری/ایرانی با جزئیات ظریف گلدوزی‌شده بر تن دارد. تونیک سفید او دارای الگوهای سنتی گلدوزی‌شده پرجزئیات و رنگارنگ (طلایی، قرمز، سبز، آبی) روی یقه، جلو سینه و سرآستین‌ها است. او شلوار سرخابی هماهنگ با همان الگوی گلدوزی را پوشیده است. یک چادر (شال) بزرگ و شفاف سرخابی روی سر، شانه‌ها و بدنش آویخته شده و بیشتر دامن و پاهایش را پوشانده است و بخشی از آن روی صخره‌های قرمز کشیده شده است. پاهای برهنه او روی صخره‌ها قرار دارند. دست‌ها به آرامی روی دامن قرار گرفته‌اند و او با حالتی متفکر و عمیق به سمت راست (خارج از کادر) نگاه می‌کند. نور گرم و طبیعی ساعت طلایی از کنار می‌تابد و چهره‌اش را روشن می‌کند و بافت‌های گلدوزی، پوست و صخره‌ها را برجسته می‌کند. ترکیب‌بندی متوازن است و دریا پس‌زمینه پهناور و صخره‌های خشن پیش‌زمینه را قاب می‌کنند. تمرکز کامل بر روی زن و لباسش است و عمق میدان روی دریا و خط افق ملایم‌تر است. بافت‌ها بسیار دقیق و واضح هستند."""
+    "هرمز": """یک عکس تمام‌قد سینمایی و فوق‌العاده واقع‌گرایانه با وضوح بالا از یک زن جوان متفکر خاورمیانه‌ای که به صورت چهارزانو (نیمه‌نیلوفری) روی مجموعه‌ای بزرگ از صخره‌های رسوبی قرمز و خشن(جزیره هرمز) نشسته است. صحنه در امتداد یک خط ساحلی صخره‌ای قرار دارد و دریای پهناور به رنگ آبی فیروزه‌ای عمیق و آرام تا افق آبی کم‌رنگ زیر نور گرم آفتاب اواخر بعدازظهر گسترش یافته است. زن پوشش اصیل بندری/ایرانی با جزئیات ظریف گلدوزی‌شده بر تن دارد. تونیک سفید او دارای الگوهای سنتی گلدوزی‌شده پرجزئیات و رنگارنگ (طلایی، قرمز، سبز، آبی) روی یقه، جلو سینه و سرآستین‌ها است. او شلوار سرخابی هماهنگ با همان الگوی گلدوزی را پوشیده است. یک چادر (شال) بزرگ و شفاف سرخابی روی سر، شانه‌ها و بدنش آویخته شده و بیشتر دامن و پاهایش را پوشانده است و بخشی از آن روی صخره‌های قرمز کشیده شده است. پاهای برهنه او روی صخره‌ها قرار دارند. دست‌ها به آرامی روی دامن قرار گرفته‌اند و او با حالتی متفکر و عمیق به سمت راست (خارج از کادر) نگاه می‌کند. نور گرم و طبیعی ساعت طلایی از کنار می‌تابد و چهره‌اش را روشن می‌کند و بافت‌های گلدوزی، پوست و صخره‌ها را برجسته می‌کند. ترکیب‌بندی متوازن است و دریا پس‌زمینه پهناور و صخره‌های خشن پیش‌زمینه را قاب می‌کنند. تمرکز کامل بر روی زن و لباسش است و عمق میدان روی دریا و خط افق ملایم‌تر است. بافت‌ها بسیار دقیق و واضح هستند.""",
+
+    "طبیعت": """Create an ultra-realistic casual smartphone photo of a young woman outdoors sitting on grass. She has long voluminous dark-brown wavy hair, parted naturally, and tilts her head slightly toward the camera with a warm genuine smile. She wears a white sleeveless fitted dress with a soft flowing skirt and thin metallic bracelets. Her arms rest crossed naturally in front of her. Bright natural afternoon sunlight creates soft highlights and gentle shadows across her face and hair, with a blurred green garden background. Slightly soft low-quality smartphone camera, natural imperfect exposure, subtle compression and grain, authentic candid photography, no flash, 2:3, no artificial AI look.
+Ultra-realistic natural skin texture, clearly visible fine pores and micro-pores, realistic peach fuzz, subtle skin lines, tiny imperfections and natural unevenness in skin tone. Keep the original facial identity and facial structure unchanged. Skin is smooth only where naturally smooth, never artificially perfect. No skin retouching, no airbrushing, no blur, no beauty filter, no waxy or plastic appearance. Realistic sebaceous shine and tiny specular highlights on the nose, cheeks and lips, highly detailed pores visible in close-up, authentic smartphone photography skin texture."""
 }
 
-app = Flask(__name__)
-
-@app.route(f'/{TOKEN}', methods=['POST'])
-def receive_message():
-    json_string = request.get_data().decode('utf-8')
-    update = telebot.types.Update.de_json(json_string)
-    bot.process_new_updates([update])
-    return "!", 200
-
-@app.route('/')
-def index():
-    return "Bot is running!", 200
-
-def check_membership(user_id):
-    try:
-        member = bot.get_chat_member(CHANNEL_ID, user_id)
-        if member.status in ['member', 'administrator', 'creator']:
-            return True
-        else:
-            return False
-    except Exception as e:
-        print("خطا در بررسی عضویت:", e)
-        return False
-
-@bot.message_handler(commands=['start'])
-def send_welcome(message):
-    welcome_text = (
-        "سلام! به ربات دریافت پرامپت خوش آمدید 🌹\n\n"
-        "زیر هر پست یا ریلز همان کلمه‌ای که گفتم کامنت بزارید را بنویسید."
-    )
-    bot.reply_to(message, welcome_text)
-
-@bot.message_handler(func=lambda message: True)
-def send_prompt(message):
-    user_id = message.from_user.id
-    user_word = message.text.strip() 
-
-    is_member = check_membership(user_id)
+# ==================== تابع پیام خوش‌آمدگویی و منو ====================
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    # ساخت دکمه‌های شیشه‌ای به صورت دو ستونی
+    keyboard = []
+    keys = list(prompts_data.keys())
+    for i in range(0, len(keys), 2):
+        row = [InlineKeyboardButton(keys[i], callback_data=keys[i])]
+        if i + 1 < len(keys):
+            row.append(InlineKeyboardButton(keys[i+1], callback_data=keys[i+1]))
+        keyboard.append(row)
     
-    if not is_member:
-        print("کاربر عضو نیست.")
-        markup = telebot.types.InlineKeyboardMarkup()
-        channel_url = f"https://t.me/{CHANNEL_ID.replace('@', '')}"
-        join_btn = telebot.types.InlineKeyboardButton("📢 عضویت در کانال", url=channel_url)
-        markup.add(join_btn)
-        
-        error_text = (
-            "⚠️ ابتدا عضو کانال خودم که دنیایی از پرامپت‌های رایگان رو برات گذاشتم بشید.\n\n"
-            "👇 لطفاً روی دکمه زیر کلیک کنید، عضو کانال شوید و سپس کلمه را دوباره بفرستید."
-        )
-        bot.reply_to(message, error_text, reply_markup=markup)
-        return 
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    
+    welcome_text = (
+        "سلام! به ربات آرشیو پرامپت‌های تخصصی خوش آمدید. 🌸\n\n"
+        "لطفاً از منوی زیر پرامپت مورد نظر خود را انتخاب کنید تا متن آن برایتان ارسال شود:"
+    )
+    
+    await update.message.reply_text(welcome_text, reply_markup=reply_markup)
 
-    if user_word in prompts_data:
-        text_to_send = f"🎨 پرامپت شما آماده است:\n\n{prompts_data[user_word]}\n\n📌 لینک کانال ما: {CHANNEL_ID}"
-        bot.reply_to(message, text_to_send)
+# ==================== تابع مدیریت کلیک روی دکمه‌ها ====================
+async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
+    
+    selected_key = query.data
+    if selected_key in prompts_data:
+        prompt_text = prompts_data[selected_key]
+        # ارسال متن پرامپت در فرمت کد (قابل کپی با یک تپ)
+        await query.message.reply_text(f"پرامپت **{selected_key}**:\n\n`{prompt_text}`", parse_mode="Markdown")
     else:
-        bot.reply_to(message, "❌ کلمه‌ای که فرستادی اشتباهه یا هنوز ثبت نشده. لطفاً کلمه رو دقیقاً مثل پست اینستاگرام بفرست (بدون ایموجی و فاصله اضافی).")
+        await query.message.reply_text("پرامپت مورد نظر یافت نشد.")
+
+# ==================== اجرای اصلی ربات ====================
+def main():
+    # ساخت اپلیکیشن و اتصال توکن
+    app = ApplicationBuilder().token(TOKEN).build()
+    
+    # ثبت دستورات و هندلرها
+    app.add_handler(CommandHandler("start", start))
+    app.add_handler(CallbackQueryHandler(button_handler))
+    
+    print("ربات با موفقیت روشن شد و در حال دریافت پیام است...")
+    # شروع به کار ربات
+    app.run_polling()
 
 if __name__ == "__main__":
-    RENDER_EXTERNAL_URL = os.environ.get('RENDER_EXTERNAL_URL')
-    if RENDER_EXTERNAL_URL:
-        bot.remove_webhook()
-        bot.set_webhook(url=f"{RENDER_EXTERNAL_URL}/{TOKEN}")
-    
-    port = int(os.environ.get('PORT', 5000))
-    app.run(host="0.0.0.0", port=port)
+    main()
